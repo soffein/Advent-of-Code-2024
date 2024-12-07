@@ -48,7 +48,7 @@ def calc_next_step(x, y):
 def patrol():
     global position
     position = calc_next_step(*position)
-    steps.append(position)
+    steps.append([patrol_direction, position])
     if is_exit_position(*position):
         return False
     else:
@@ -62,10 +62,11 @@ with open('files/day6input.txt') as file:
 steps = []
 patrol_direction = 0
 position = find_start_position()
-steps.append(position)
+steps.append([patrol_direction, position])
 
 while patrol():
     pass
 
-print(f"Patrol finished at {position} and after {len(set(steps))} steps")
+distinct_positions = set([step[1] for step in steps])
 
+print(f"Patrol finished at {position} and after {len(distinct_positions)} steps")
