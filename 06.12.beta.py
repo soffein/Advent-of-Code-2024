@@ -1,7 +1,7 @@
 import re
 # this is my beta, bc the first solution took ages
-# small input: 41 distinct steps, 6 obstacles
-# puzzle input: 5080 distinct steps, 1919 obstacles
+# small input: 41 distinct steps, finish at row 9 col 7, 6 obstacles
+# puzzle input: 5080 distinct steps, finish at row 76 col 0, 1919 obstacles
 
 PATROL = ((-1, 0), (0, 1), (1, 0), (0, -1))  # it's: up, right, down, left
 GUARD = "^"
@@ -14,7 +14,10 @@ NEXT_STEP = 2
 we_shortcuts, ns_shortcuts, obstacles = [], [], []
 
 
-def generate_shortcuts():
+# I know it's not the prettiest to detect north-south-, west-east-shortcuts, the position of obstacles and
+# returning the starting position within one mighty method, yet it is very effective to loop only once through the
+# grid, and therefore it's the way to got for now:
+def load_grid_layout() -> tuple[int, int]:
 
     def find_free_paths(row_index, char_array, add_to_array):
         regex = r"([\.^]+)"
@@ -24,12 +27,15 @@ def generate_shortcuts():
             add_to_array.append([row_index, (start, end-1)])
 
     columns = ['' for _ in grid[0]]
+    start_position = (0, 0)
 
     for i, row in enumerate(grid):
-        for j, column in enumerate(row):
-            if column == OBSTACLE:
+        for j, point in enumerate(row):
+            if point == OBSTACLE:
                 obstacles.append((i, j))
-            columns[j] += column
+            elif point == GUARD:
+                start_position = (i, j)
+            columns[j] += point
 
         find_free_paths(i, row, we_shortcuts)
 
@@ -39,13 +45,8 @@ def generate_shortcuts():
     print(f'West-East shortcuts: {we_shortcuts}')
     print(f'North-South shortcuts: {ns_shortcuts}')
     print(f'Obstacles: {obstacles}')
-
-
-def find_start_position():
-    for row in range(len(grid)):
-        for column in range(len(grid[0])):
-            if grid[row][column] == GUARD:
-                return row, column
+    print(f'Start position: {start_position}')
+    return start_position
 
 
 def is_in_grid(x, y):
@@ -96,14 +97,13 @@ def patrol():
         return NEXT_STEP
 
 
-with open('files/day6inputsmall.txt') as file:
+with open('files/day6input.txt') as file:
 
     grid = [list(line.strip()) for line in file]
 
-generate_shortcuts()
+position = load_grid_layout()
 steps = []
 patrol_direction = 0
-position = find_start_position()
 steps.append([patrol_direction, position])
 
 while patrol() == NEXT_STEP:
