@@ -1,3 +1,4 @@
+# NOTE: this worked for my input, but took ages (28 minutes), so it is for sure not the best solution!
 PATROL = ((-1, 0), (0, 1), (1, 0), (0, -1)) # it's: up, right, down, left
 GUARD = "^"
 OBSTACLE = "#"
@@ -5,7 +6,6 @@ EMPTY = "."
 EXIT_FOUND = 0
 LOOP_DETECTED = 1
 NEXT_STEP = 2
-
 
 
 def find_start_position():
@@ -84,7 +84,6 @@ blocking_indices = 0
 for row_index in range(len(grid)-1):
     print(f'Simulate row {row_index}')
     for column_index in range(len(grid[0])-1):
-        #print(f'Simulate column {column_index}')
         if grid[row_index][column_index] != EMPTY:
             continue
         steps = []
