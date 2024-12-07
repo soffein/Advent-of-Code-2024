@@ -48,6 +48,9 @@ def calc_next_step(x, y):
 def patrol():
     global position
     position = calc_next_step(*position)
+    if [patrol_direction, position] in steps:
+        print(f'Loop detected! Aborting at position {position}')
+        exit(0)
     steps.append([patrol_direction, position])
     if is_exit_position(*position):
         return False
@@ -68,5 +71,4 @@ while patrol():
     pass
 
 distinct_positions = set([step[1] for step in steps])
-
 print(f"Patrol finished at {position} and after {len(distinct_positions)} steps")
