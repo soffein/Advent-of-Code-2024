@@ -6,7 +6,7 @@ import re
 UP, RIGHT, DOWN, LEFT = (-1, 0), (0, 1), (1, 0), (0, -1)
 PATROL_ORDER = (UP, RIGHT, DOWN, LEFT)
 GUARD, OBSTACLE, EMPTY = "^", "#", "."
-EXIT_FOUND, NEXT_STEP = range(2)
+EXIT_FOUND, NEXT_STEP, LOOP_DETECTED = range(3)
 
 lr_shortcuts, ud_shortcuts, obstacles = [], [], []
 
@@ -75,7 +75,7 @@ def calc_new_position(x:int, y:int) -> tuple[int, int]:
         for range_tuple in ud_shortcuts[y]:
             if range_tuple[0] <= x <= range_tuple[1]:
                 if patrol_direction == UP:
-                    for n in range(range_tuple[0], x):
+                    for n in range(range_tuple[0]+1, x):
                         trace.append([patrol_direction, (n, y)])
                     return range_tuple[0], y
                 else:
@@ -86,7 +86,7 @@ def calc_new_position(x:int, y:int) -> tuple[int, int]:
         for range_tuple in lr_shortcuts[x]:
             if range_tuple[0] <= y <= range_tuple[1]:
                 if patrol_direction == LEFT:
-                    for n in range(range_tuple[0], y):
+                    for n in range(range_tuple[0]+1, y):
                         trace.append([patrol_direction, (x, n)])
                     return x, range_tuple[0]
                 else:
@@ -100,6 +100,9 @@ def patrol():
 
     position = calc_new_position(*position)
     print(f'Patrol position: {position}')
+    if [patrol_direction, position] in trace:
+        print(f'Loop detected')
+        return LOOP_DETECTED
     trace.append([patrol_direction, position])
     if is_exit_position(*position):
         return EXIT_FOUND
@@ -120,6 +123,13 @@ trace = [[patrol_direction, position]]
 while patrol() == NEXT_STEP:
     pass
 print(f'Trace: {trace}')
-distinct_positions = set([step[1] for step in trace])
+#distinct_positions = set([step[1] for step in trace])
+
+distinct_positions = []
+for step in trace:
+    if step[1] not in distinct_positions:
+        print(f'Step: {step[1]}')
+        distinct_positions.append(step[1])
+
 print(f"Patrol finished at {position} and after {len(distinct_positions)} steps")
 
