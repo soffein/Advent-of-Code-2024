@@ -16,7 +16,13 @@ we_shortcuts, ns_shortcuts, obstacles = [], [], []
 
 def generate_shortcuts():
 
-    regex = r"([\.^]+)"
+    def find_free_paths(row_index, char_array, add_to_array):
+        regex = r"([\.^]+)"
+        matches = re.finditer(regex, ''.join(char_array))
+        for match in matches:
+            start, end = match.span()
+            add_to_array.append([row_index, (start, end-1)])
+
     columns = ['' for _ in grid[0]]
 
     for i, row in enumerate(grid):
@@ -25,16 +31,10 @@ def generate_shortcuts():
                 obstacles.append((i, j))
             columns[j] += column
 
-        matches = re.finditer(regex, ''.join(row))
-        for match in matches:
-            start, end = match.span()
-            we_shortcuts.append([i, (start, end-1)])
+        find_free_paths(i, row, we_shortcuts)
 
     for i, column in enumerate(columns):
-        matches = re.finditer(regex, ''.join(column))
-        for match in matches:
-            start, end = match.span()
-            ns_shortcuts.append([i, (start, end-1)])
+        find_free_paths(i, column, ns_shortcuts)
 
     print(f'West-East shortcuts: {we_shortcuts}')
     print(f'North-South shortcuts: {ns_shortcuts}')
