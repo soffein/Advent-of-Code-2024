@@ -55,21 +55,18 @@ def is_exit_position(x, y):
     return x == 0 or x == len(grid)-1 or y == 0 or y == len(grid[0])-1
 
 
-def determine_direction():
+def turn_90_degrees():
     global patrol_direction
-    if patrol_direction < len(PATROL_ORDER)-1:
-        patrol_direction += 1
-    else:
-        patrol_direction = 0
-
+    index = (PATROL_ORDER.index(patrol_direction) + 1) % len(PATROL_ORDER)  # adds 1 to index or resets to 0 if at end
+    patrol_direction = PATROL_ORDER[index]
 
 def calc_next_step(x, y):
 
-    nx = x + PATROL_ORDER[patrol_direction][0]
-    ny = y + PATROL_ORDER[patrol_direction][1]
+    nx = x + patrol_direction[0]
+    ny = y + patrol_direction[1]
 
     if grid[nx][ny] == OBSTACLE:
-        determine_direction()
+        turn_90_degrees()
         return calc_next_step(x, y)
 
     return nx, ny
@@ -88,12 +85,12 @@ def patrol():
         return NEXT_STEP
 
 
-with open('files/day6input.txt') as file:
+with open('files/day6inputsmall.txt') as file:
 
     grid = [list(line.strip()) for line in file]
 
 position = load_grid_layout()
-patrol_direction = 0
+patrol_direction = UP
 
 steps = [[patrol_direction, position]]
 
