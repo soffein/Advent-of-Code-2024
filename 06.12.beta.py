@@ -8,20 +8,21 @@ PATROL_ORDER = (UP, RIGHT, DOWN, LEFT)
 GUARD, OBSTACLE, EMPTY = "^", "#", "."
 EXIT_FOUND, LOOP_DETECTED, NEXT_STEP = range(3)
 
-we_shortcuts, ns_shortcuts, obstacles = [], [], []
+lr_shortcuts, ud_shortcuts, obstacles = [], [], []
 
 
 # I know it's not the prettiest to detect north-south-, west-east-shortcuts, the position of obstacles and
 # returning the starting position within one mighty method, yet it is very effective to loop only once through the
 # grid, and therefore it's the way to got for now:
 def load_grid_layout() -> tuple[int, int]:
+    global lr_shortcuts, ud_shortcuts
 
     def find_free_paths(row_index, char_array, add_to_array):
         regex = r"([\.^]+)"
         matches = re.finditer(regex, ''.join(char_array))
         for match in matches:
             start, end = match.span()
-            add_to_array.append([row_index, (start, end-1)])
+            add_to_array[row_index].append((start, end-1))
 
     columns = ['' for _ in grid[0]]
     start_position = (0, 0)
@@ -35,13 +36,15 @@ def load_grid_layout() -> tuple[int, int]:
                 start_position = (i, j)
             columns[j] += point
 
-        find_free_paths(i, row, we_shortcuts)
+        lr_shortcuts.append([])
+        find_free_paths(i, row, lr_shortcuts)
 
     for i, column in enumerate(columns):
-        find_free_paths(i, column, ns_shortcuts)
+        ud_shortcuts.append([])
+        find_free_paths(i, column, ud_shortcuts)
 
-    print(f'West-East shortcuts: {we_shortcuts}')
-    print(f'North-South shortcuts: {ns_shortcuts}')
+    print(f'Left-Right shortcuts: {lr_shortcuts}')
+    print(f'Up-Down shortcuts: {ud_shortcuts}')
     print(f'Obstacles: {obstacles}')
     print(f'Start position: {start_position}')
     return start_position
@@ -68,6 +71,8 @@ def calc_new_position(x:int, y:int) -> tuple[int, int]:
     @return: new position coordinates x, y
 
     """
+    #if patrol_direction is UP or DOWN:
+     #   ud_shortcuts.
     nx = x + patrol_direction[0]
     ny = y + patrol_direction[1]
 
