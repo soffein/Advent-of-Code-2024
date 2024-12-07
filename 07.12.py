@@ -1,5 +1,5 @@
 from itertools import product
-operators = ['+', '*', '||'] # just remove the || from the list for part one
+operators = ['+', '*', '||']  # just remove the || from the list for part one
 
 
 def split(equation):

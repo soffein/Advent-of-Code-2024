@@ -1,5 +1,5 @@
 # NOTE: this worked for my input, but took ages (28 minutes), so it is for sure not the best solution!
-PATROL = ((-1, 0), (0, 1), (1, 0), (0, -1)) # it's: up, right, down, left
+PATROL = ((-1, 0), (0, 1), (1, 0), (0, -1))  # it's: up, right, down, left
 GUARD = "^"
 OBSTACLE = "#"
 EMPTY = "."
