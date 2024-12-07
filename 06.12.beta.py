@@ -3,13 +3,10 @@ import re
 # small input: 41 distinct steps, finish at row 9 col 7, 6 obstacles
 # puzzle input: 5080 distinct steps, finish at row 76 col 0, 1919 obstacles
 
-PATROL = ((-1, 0), (0, 1), (1, 0), (0, -1))  # it's: up, right, down, left
-GUARD = "^"
-OBSTACLE = "#"
-EMPTY = "."
-EXIT_FOUND = 0
-LOOP_DETECTED = 1
-NEXT_STEP = 2
+UP, RIGHT, DOWN, LEFT = (-1, 0), (0, 1), (1, 0), (0, -1)
+PATROL_ORDER = (UP, RIGHT, DOWN, LEFT)
+GUARD, OBSTACLE, EMPTY = "^", "#", "."
+EXIT_FOUND, LOOP_DETECTED, NEXT_STEP = range(3)
 
 we_shortcuts, ns_shortcuts, obstacles = [], [], []
 
@@ -60,7 +57,7 @@ def is_exit_position(x, y):
 
 def determine_direction():
     global patrol_direction
-    if patrol_direction < len(PATROL)-1:
+    if patrol_direction < len(PATROL_ORDER)-1:
         patrol_direction += 1
     else:
         patrol_direction = 0
@@ -68,8 +65,8 @@ def determine_direction():
 
 def calc_next_step(x, y):
 
-    nx = x + PATROL[patrol_direction][0]
-    ny = y + PATROL[patrol_direction][1]
+    nx = x + PATROL_ORDER[patrol_direction][0]
+    ny = y + PATROL_ORDER[patrol_direction][1]
 
     if grid[nx][ny] == OBSTACLE:
         determine_direction()
