@@ -31,6 +31,7 @@ def load_grid_layout() -> tuple[int, int]:
 
     for i, row in enumerate(grid):
         for j, point in enumerate(row):
+            # TODO: not sure yet, if we need that array or if an == OBSTACLE check is better; delete this if so
             if point == OBSTACLE:
                 obstacles.append((i, j))
             elif point == GUARD:
@@ -55,13 +56,6 @@ def is_in_grid(x, y):
 
 def is_exit_position(x, y):
     return x == 0 or x == len(grid)-1 or y == 0 or y == len(grid[0])-1
-
-
-def is_obstacle(x, y):
-    a = x + PATROL[patrol_direction][0]
-    b = y + PATROL[patrol_direction][1]
-    item = grid[a][b]
-    return item == OBSTACLE
 
 
 def determine_direction():
@@ -102,9 +96,9 @@ with open('files/day6input.txt') as file:
     grid = [list(line.strip()) for line in file]
 
 position = load_grid_layout()
-steps = []
 patrol_direction = 0
-steps.append([patrol_direction, position])
+
+steps = [[patrol_direction, position]]
 
 while patrol() == NEXT_STEP:
     pass
