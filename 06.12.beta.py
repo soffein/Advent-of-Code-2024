@@ -60,14 +60,20 @@ def turn_90_degrees():
     index = (PATROL_ORDER.index(patrol_direction) + 1) % len(PATROL_ORDER)  # adds 1 to index or resets to 0 if at end
     patrol_direction = PATROL_ORDER[index]
 
-def calc_next_step(x, y):
+def calc_new_position(x:int, y:int) -> tuple[int, int]:
+    """Calculate new position based on current position and direction.
 
+    @param: x row index of current position
+    @param: y column index of current position
+    @return: new position coordinates x, y
+
+    """
     nx = x + patrol_direction[0]
     ny = y + patrol_direction[1]
 
     if grid[nx][ny] == OBSTACLE:
         turn_90_degrees()
-        return calc_next_step(x, y)
+        return calc_new_position(x, y)
 
     return nx, ny
 
@@ -75,7 +81,7 @@ def calc_next_step(x, y):
 def patrol():
     global position
 
-    position = calc_next_step(*position)
+    position = calc_new_position(*position)
     if [patrol_direction, position] in steps:
         return LOOP_DETECTED
     steps.append([patrol_direction, position])
