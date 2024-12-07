@@ -6,7 +6,7 @@ import re
 UP, RIGHT, DOWN, LEFT = (-1, 0), (0, 1), (1, 0), (0, -1)
 PATROL_ORDER = (UP, RIGHT, DOWN, LEFT)
 GUARD, OBSTACLE, EMPTY = "^", "#", "."
-EXIT_FOUND, LOOP_DETECTED, NEXT_STEP = range(3)
+EXIT_FOUND, NEXT_STEP = range(2)
 
 lr_shortcuts, ud_shortcuts, obstacles = [], [], []
 
@@ -71,43 +71,55 @@ def calc_new_position(x:int, y:int) -> tuple[int, int]:
     @return: new position coordinates x, y
 
     """
-    #if patrol_direction is UP or DOWN:
-     #   ud_shortcuts.
-    nx = x + patrol_direction[0]
-    ny = y + patrol_direction[1]
-
-    if grid[nx][ny] == OBSTACLE:
-        turn_90_degrees()
-        return calc_new_position(x, y)
-
-    return nx, ny
+    if patrol_direction == UP or patrol_direction == DOWN:
+        for range_tuple in ud_shortcuts[y]:
+            if range_tuple[0] <= x <= range_tuple[1]:
+                if patrol_direction == UP:
+                    for n in range(range_tuple[0], x):
+                        trace.append([patrol_direction, (n, y)])
+                    return range_tuple[0], y
+                else:
+                    for n in range(x, range_tuple[1]):
+                        trace.append([patrol_direction, (n, y)])
+                    return range_tuple[1], y
+    else:
+        for range_tuple in lr_shortcuts[x]:
+            if range_tuple[0] <= y <= range_tuple[1]:
+                if patrol_direction == LEFT:
+                    for n in range(range_tuple[0], y):
+                        trace.append([patrol_direction, (x, n)])
+                    return x, range_tuple[0]
+                else:
+                    for n in range(y, range_tuple[1]):
+                        trace.append([patrol_direction, (x, n)])
+                    return x, range_tuple[1]
 
 
 def patrol():
     global position
 
     position = calc_new_position(*position)
-    if [patrol_direction, position] in steps:
-        return LOOP_DETECTED
-    steps.append([patrol_direction, position])
+    print(f'Patrol position: {position}')
+    trace.append([patrol_direction, position])
     if is_exit_position(*position):
         return EXIT_FOUND
     else:
+        turn_90_degrees()
         return NEXT_STEP
 
 
-with open('files/day6inputsmall.txt') as file:
+with open('files/day6input.txt') as file:
 
     grid = [list(line.strip()) for line in file]
 
 position = load_grid_layout()
 patrol_direction = UP
 
-steps = [[patrol_direction, position]]
+trace = [[patrol_direction, position]]
 
 while patrol() == NEXT_STEP:
     pass
-
-distinct_positions = set([step[1] for step in steps])
+print(f'Trace: {trace}')
+distinct_positions = set([step[1] for step in trace])
 print(f"Patrol finished at {position} and after {len(distinct_positions)} steps")
 
