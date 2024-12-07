@@ -1,6 +1,11 @@
 PATROL = ((-1, 0), (0, 1), (1, 0), (0, -1)) # it's: up, right, down, left
 GUARD = "^"
 OBSTACLE = "#"
+EMPTY = "."
+EXIT_FOUND = 0
+LOOP_DETECTED = 1
+NEXT_STEP = 2
+
 
 
 def find_start_position():
@@ -47,15 +52,15 @@ def calc_next_step(x, y):
 
 def patrol():
     global position
+
     position = calc_next_step(*position)
     if [patrol_direction, position] in steps:
-        print(f'Loop detected! Aborting at position {position}')
-        exit(0)
+        return LOOP_DETECTED
     steps.append([patrol_direction, position])
     if is_exit_position(*position):
-        return False
+        return EXIT_FOUND
     else:
-        return True
+        return NEXT_STEP
 
 
 with open('files/day6input.txt') as file:
@@ -67,8 +72,34 @@ patrol_direction = 0
 position = find_start_position()
 steps.append([patrol_direction, position])
 
-while patrol():
+while patrol() == NEXT_STEP:
     pass
 
 distinct_positions = set([step[1] for step in steps])
 print(f"Patrol finished at {position} and after {len(distinct_positions)} steps")
+
+
+blocking_indices = 0
+
+for row_index in range(len(grid)-1):
+    print(f'Simulate row {row_index}')
+    for column_index in range(len(grid[0])-1):
+        #print(f'Simulate column {column_index}')
+        if grid[row_index][column_index] != EMPTY:
+            continue
+        steps = []
+        patrol_direction = 0
+        position = find_start_position()
+        steps.append([patrol_direction, position])
+        grid[row_index][column_index] = OBSTACLE
+        simulation_result = NEXT_STEP
+
+        while simulation_result == NEXT_STEP:
+            simulation_result = patrol()
+
+        if simulation_result == LOOP_DETECTED:
+            blocking_indices += 1
+
+        grid[row_index][column_index] = EMPTY
+
+print(f"Number of blocking indices {blocking_indices}")
