@@ -22,6 +22,10 @@ def is_on_grid(grid: list, point: tuple) -> bool:
     return 0 <= point[0] < len(grid) and 0 <= point[1] < len(grid[0])
 
 
+def calc_antinode_location(point: tuple, distance_vector: tuple) -> tuple:
+    return point[0] + distance_vector[0], point[1] + distance_vector[1]
+
+
 with open('files/day8input.txt') as file:
 
     file = [list(line.strip()) for line in file]
@@ -40,13 +44,13 @@ for signal_name in antennas:
         reference_point = location_tuple[0]
         resonant_antinodes.append(reference_point)  # add self to the list
 
-        single_antinode = (reference_point[0]+antenna_distance[0], reference_point[1]+antenna_distance[1])
-        if is_on_grid(file, single_antinode):
-            single_antinodes.append(single_antinode)
+        location = calc_antinode_location(reference_point, antenna_distance)
+        if is_on_grid(file, location):
+            single_antinodes.append(location)
 
         on_grid = True
         while on_grid:
-            reference_point = (reference_point[0]+antenna_distance[0], reference_point[1]+antenna_distance[1])
+            reference_point = calc_antinode_location(reference_point, antenna_distance)
             if is_on_grid(file, reference_point):
                 resonant_antinodes.append(reference_point)
             else:
