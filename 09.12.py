@@ -1,3 +1,5 @@
+from datetime import datetime
+
 SPACE = '.'
 file_content = []
 defragmented_content = []
@@ -49,10 +51,13 @@ def defrag():
         pass
 
 
+start_time = datetime.now()
 with open('files/day9input.txt') as input_file:
 
     instruction = input_file.readline()
 
 generate_file_content()
 defrag()
+end_time = datetime.now()
 print(defragmented_content)
+print(f'Execution time: {(end_time - start_time).total_seconds()} s')
