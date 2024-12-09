@@ -51,6 +51,18 @@ def defrag():
         pass
 
 
+def build_checksum() -> int:
+    checksum = 0
+
+    for i, value in enumerate(defragmented_content):
+        if value == SPACE:
+            break
+        else:
+            checksum += value * i
+
+    return checksum
+
+
 start_time = datetime.now()
 with open('files/day9input.txt') as input_file:
 
@@ -59,5 +71,5 @@ with open('files/day9input.txt') as input_file:
 generate_file_content()
 defrag()
 end_time = datetime.now()
-print(defragmented_content)
+print(f'Checksum: {build_checksum()}')
 print(f'Execution time: {(end_time - start_time).total_seconds()} s')
