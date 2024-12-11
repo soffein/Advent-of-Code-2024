@@ -20,26 +20,26 @@ def check_neighbors(x: int, y: int) -> list:
     return valid_trail_steps
 
 
-def walk_the_trail(position: list, visited: set) -> list:
-    trails = []
-    stack = [(position, [position])]
-    while stack:
-        current_pos, path = stack.pop()
-        if grid[current_pos[0]][current_pos[1]] == 9:
-            trails.append(path)
-        for neighbor in check_neighbors(current_pos[0], current_pos[1]):
-            if neighbor not in visited:
-                visited.add(neighbor)
-                stack.append((neighbor, path + [neighbor]))
+def walk_the_trail(position: list) -> list:
+    trails = [position]
+    for neighbor in check_neighbors(position[0], position[1]):
+        trails.extend(walk_the_trail(neighbor))
     return trails
 
 
 def find_trails():
     global starting_positions, paths
     for position in starting_positions:
-        visited = set()
-        visited.add(position)
-        paths.extend(walk_the_trail(position, visited))
+        paths.append(walk_the_trail(position))
+
+
+def get_total_ratings():
+    total_rating = 0
+    for trail in paths:
+        for position in trail:
+            if grid[position[0]][position[1]] == 9:
+                total_rating += 1
+    print(f'Sum of als ratings is {total_rating}')
 
 
 def get_total_trail_scores():
@@ -53,11 +53,8 @@ def get_total_trail_scores():
     print(f'Sum of scores is {sum(trailhead_scores.values())}')
 
 
-def calc_trail_score():
-    pass
-
-
 with open('files/day10input.txt') as input_file:
+
     grid = [[int(char) for char in line.strip()] for line in input_file]
 
 starting_positions = []
@@ -66,8 +63,6 @@ load_starts()
 paths = []
 find_trails()
 get_total_trail_scores()
+get_total_ratings()
 
 print(f'Valid Trails: {paths}')
-print(f'Grid: {grid}')
-print(f'Starting_positions: {starting_positions}')
-print(f'Grid has {len(grid)} rows and {len(grid[0])} columns')
